@@ -67,7 +67,7 @@ void insertPos(struct node** start, int pos, int value)
 
 void display(struct node *current){
     while(current!=NULL){
-        printf("%d\n",current->data);
+        printf("data: %d\n",current->data);
         current=current->next;
     }
 }
@@ -76,6 +76,7 @@ void free_list(struct node *current){
   if (current!=NULL) {
     free_list(current->next);
     free(current);
+    display(current);
   }
 }
 
@@ -86,5 +87,6 @@ int main(){
     insertPos(&head,1,9);
     insertEnd(&head,5);
     display(head);
+    free_list(head);
     return 0;
 }
