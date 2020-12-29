@@ -81,15 +81,15 @@ void read_in_file(FILE *infile){
   char * line = NULL;
   size_t len = 0;
   ssize_t read;
+  struct node *head = NULL;
   while ((read = getline(&line, &len, infile)) != -1) {
     printf("%s", line);
+    //change to for char in line
+    insertEnd(&head,line);
   }
   fclose(infile);
   if (line)
     free(line);
-  struct node *head = NULL;
-  insertEnd(&head,line);
-  display(head);
 }
 
 void write_out_file(FILE *outfile, board u){
