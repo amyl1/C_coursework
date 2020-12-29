@@ -8,7 +8,8 @@ int row;
 board setup_board();
 void cleanup_board(board u);
 
-void read_in_file(FILE *infile, board u);
+//void read_in_file(FILE *infile, board u);
+void read_in_file(FILE *infile);
 void write_out_file(FILE *outfile, board u);
 
 struct move read_in_move();
