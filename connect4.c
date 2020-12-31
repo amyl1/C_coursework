@@ -17,51 +17,44 @@ struct board_structure {
 /*Put something suitable here*/
 };
 
-void insertEnd(struct node*head,char data) {
+void insertEndDouble(struct node** header,char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
-    //printf("%c\n",data);
     newnode->data=data;
     newnode->prev=NULL;
     newnode->next=NULL;
-    if(head == NULL) {
-        head=newnode;
-        
+
+    if(*header == NULL) {
+        *header=newnode;
+        return;
     }
-    struct node* temp = head;
+
+    struct node* temp = *header;
 
     while(temp->next != NULL) {
         temp=temp->next;
-        
     }
-    
+
     temp->next = newnode;
     newnode->prev = temp;
+    //printf("%s\n**\n", temp->next);
 }
-/*
-void insertPos(struct node** start, int pos, char * data)
-{
-    struct node* new_node = (struct node*)malloc(sizeof(struct node*)); 
-    new_node->data = data; // Inserting the data 
-    // Find node having value2 and next node of it 
-    struct node *temp = *start; 
-    pos--;
-    while (pos>0){
-      temp = temp->next;
-      pos--;
-    }
-    struct node *next = temp->next; 
-    temp->next = new_node; 
-    new_node->prev = temp; 
-    new_node->next = next; 
-    next->prev = new_node; 
-}*/
 
-void display(struct node *current){
-    while(current!=NULL){
-        printf("Displaying");
-        printf("%c\n",current->data);
-        current=current->next;
+
+void display(struct node * head){
+    struct node *tmp;
+    if(head==NULL)
+    {
+      printf("Empty list");
     }
+    else{
+      tmp=head;
+      while (tmp!=NULL){
+        printf("%c \n",tmp->data);
+        tmp=tmp->next;
+      }
+    }
+
+
 }
 
 void free_list(struct node *current){
@@ -82,18 +75,16 @@ void cleanup_board(board u){
 
 void read_in_file(FILE *infile){
   char line[100];
-  
+
   while ( fgets( line, 100, infile ) != NULL ) 
     { 
       struct node *head = NULL;
       for (int i=0;i<strlen(line)-1;i++)
       {
-      insertEnd(head,line[i]);
-      //printf("%c",line[i]);
+      insertEndDouble(&head,line[i]);
       }
       display(head);
     } 
-
 }
 
 void write_out_file(FILE *outfile, board u){
