@@ -12,11 +12,31 @@ struct node
   struct node *next;
   struct node *prev;
 };
-
-struct board_structure {
-/*Put something suitable here*/
+struct rowStruct
+{
+  struct node *head;
+  int rowNum;
+  struct rowStruct *next;
 };
 
+struct board_structure {
+  struct rowStruct row;
+  int col;
+/*Put something suitable here*/
+};
+void insertPos(struct node** start, int pos, char data)
+{
+    struct node* new_node = (struct node*)malloc(sizeof(struct node*));
+    new_node->data = data;
+    struct node *temp = *start; 
+    pos--;
+    while (pos>0){
+      temp = temp->next;
+      pos--;
+    }
+    temp->data=data;
+
+}
 void insertEndDouble(struct node** header,char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
     newnode->data=data;
@@ -27,18 +47,14 @@ void insertEndDouble(struct node** header,char data) {
         *header=newnode;
         return;
     }
-
     struct node* temp = *header;
 
     while(temp->next != NULL) {
         temp=temp->next;
     }
-
     temp->next = newnode;
     newnode->prev = temp;
-    //printf("%s\n**\n", temp->next);
 }
-
 
 void display(struct node * head){
     struct node *tmp;
@@ -53,8 +69,6 @@ void display(struct node * head){
         tmp=tmp->next;
       }
     }
-
-
 }
 
 void free_list(struct node *current){
@@ -75,7 +89,7 @@ void cleanup_board(board u){
 
 void read_in_file(FILE *infile){
   char line[100];
-
+  int j = 1;
   while ( fgets( line, 100, infile ) != NULL ) 
     { 
       struct node *head = NULL;
@@ -84,6 +98,16 @@ void read_in_file(FILE *infile){
       insertEndDouble(&head,line[i]);
       }
       display(head);
+      /*
+      struct rowStruct *row = NULL;
+      */
+      struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
+      newRow->head=head;
+      newRow->rowNum=j;
+
+      //change this
+      newRow->next=NULL;
+      j++;
     } 
 }
 
