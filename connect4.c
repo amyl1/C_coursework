@@ -8,7 +8,7 @@
 #include"connect4.h"
 struct node
 {
-  char * data;
+  char data;
   struct node *next;
   struct node *prev;
 };
@@ -17,25 +17,27 @@ struct board_structure {
 /*Put something suitable here*/
 };
 
-void insertEnd(struct node** head,char * data) {
+void insertEnd(struct node*head,char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
+    //printf("%c\n",data);
     newnode->data=data;
     newnode->prev=NULL;
     newnode->next=NULL;
-    if(*head == NULL) {
-        *head=newnode;
-        return;
+    if(head == NULL) {
+        head=newnode;
+        
     }
-
-    struct node* temp = *head;
+    struct node* temp = head;
 
     while(temp->next != NULL) {
         temp=temp->next;
+        
     }
+    
     temp->next = newnode;
     newnode->prev = temp;
 }
-
+/*
 void insertPos(struct node** start, int pos, char * data)
 {
     struct node* new_node = (struct node*)malloc(sizeof(struct node*)); 
@@ -52,11 +54,12 @@ void insertPos(struct node** start, int pos, char * data)
     new_node->prev = temp; 
     new_node->next = next; 
     next->prev = new_node; 
-}
+}*/
 
 void display(struct node *current){
     while(current!=NULL){
-        printf("%s\n",current->data);
+        printf("Displaying");
+        printf("%c\n",current->data);
         current=current->next;
     }
 }
@@ -78,18 +81,19 @@ void cleanup_board(board u){
 }
 
 void read_in_file(FILE *infile){
-  char * line = NULL;
-  size_t len = 0;
-  ssize_t read;
-  struct node *head = NULL;
-  while ((read = getline(&line, &len, infile)) != -1) {
-    printf("%s", line);
-    //change to for char in line
-    insertEnd(&head,line);
-  }
-  fclose(infile);
-  if (line)
-    free(line);
+  char line[100];
+  
+  while ( fgets( line, 100, infile ) != NULL ) 
+    { 
+      struct node *head = NULL;
+      for (int i=0;i<strlen(line)-1;i++)
+      {
+      insertEnd(head,line[i]);
+      //printf("%c",line[i]);
+      }
+      display(head);
+    } 
+
 }
 
 void write_out_file(FILE *outfile, board u){
