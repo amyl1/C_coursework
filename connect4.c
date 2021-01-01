@@ -71,12 +71,9 @@ void read_in_file(FILE *infile){
   while ( fgets( line, 100, infile ) != NULL ) 
     { 
       struct node *head = NULL;
-      for (int i=0;i<strlen(line)-1;i++)
+      for (int i=0;i<strlen(line);i++)
       {
-        if (line!=NULL){
           insertEndDouble(&head,line[i]);
-        }
-      
       }
       struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
       newRow->head=head;
@@ -84,9 +81,8 @@ void read_in_file(FILE *infile){
       j++;
     } 
   currBoard->size=j;
-  char player=next_player(currBoard);
-  printf("Next player: %c",player);
-
+  char winner=current_winner(currBoard);
+  printf("%c\n",winner);
 }
 
 void write_out_file(FILE *outfile, board u){
@@ -120,7 +116,30 @@ char next_player(board u){
 }
 
 char current_winner(board u){
-//You may put code here
+  for (int x=0;x<u->size;x++) {
+    struct node *tmp;
+    tmp=u->rows[x]->head;
+    char curr;
+    char next;
+    int count=0;
+    for(int i=0;i<sizeof(u->rows[0])-1;i++){
+        curr=tmp->data;
+        next=tmp->next->data;
+        //printf("%c\n",next);
+        if(curr==next&&curr!='.'){
+          count++;
+        }
+        else{
+          count=0;
+        }
+        if (count==4)
+        {
+          return curr;
+        }
+        tmp=tmp->next;
+    }
+  }
+  return 'n';
 }
 
 struct move read_in_move(board u){
@@ -145,6 +164,6 @@ void play_move(struct move m, board u){
 
 //You may put additional functions here if you wish.
 void main(){
-  FILE * infile = fopen("test_input1.txt","r");
+  FILE * infile = fopen("test_input2.txt","r");
   read_in_file(infile);
 }
