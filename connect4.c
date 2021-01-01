@@ -19,6 +19,7 @@ struct rowStruct
 
 struct board_structure {
   struct rowStruct *rows[512];
+  int size;
 };
 
 void insertEndDouble(struct node** header,char data) {
@@ -72,18 +73,20 @@ void read_in_file(FILE *infile){
       struct node *head = NULL;
       for (int i=0;i<strlen(line)-1;i++)
       {
-      insertEndDouble(&head,line[i]);
+        if (line!=NULL){
+          insertEndDouble(&head,line[i]);
+        }
+      
       }
       struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
       newRow->head=head;
       currBoard->rows[j]=newRow;
       j++;
     } 
-  //display the board row by row
-  for (int x=0; x<5; x++){
-    display(currBoard->rows[x]->head);
-    printf("\n");
-  }
+  currBoard->size=j;
+  char player=next_player(currBoard);
+  printf("Next player: %c",player);
+
 }
 
 void write_out_file(FILE *outfile, board u){
@@ -93,14 +96,27 @@ void write_out_file(FILE *outfile, board u){
 char next_player(board u){
   int count_x=0;
   int count_o=0;
-  char player;
+  for (int x=0;x<u->size;x++) {
+    struct node *tmp;
+    tmp=u->rows[x]->head;
+    while (tmp!=NULL){
+        if(tmp->data=='x')
+        {
+          count_x++;
+        }
+        else if (tmp->data=='o'){
+          count_o++;
+        }
+        tmp=tmp->next;
+    }
+  }
   if (count_x==count_o){
-    player='x';
+    return 'x';
   }
   else{
-    player='o';
+    return 'o';
   }
-  return player;
+  
 }
 
 char current_winner(board u){
