@@ -15,28 +15,12 @@ struct node
 struct rowStruct
 {
   struct node *head;
-  int rowNum;
-  struct rowStruct *next;
 };
 
 struct board_structure {
-  struct rowStruct row;
-  int col;
-/*Put something suitable here*/
+  struct rowStruct *rows[512];
 };
-void insertPos(struct node** start, int pos, char data)
-{
-    struct node* new_node = (struct node*)malloc(sizeof(struct node*));
-    new_node->data = data;
-    struct node *temp = *start; 
-    pos--;
-    while (pos>0){
-      temp = temp->next;
-      pos--;
-    }
-    temp->data=data;
 
-}
 void insertEndDouble(struct node** header,char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
     newnode->data=data;
@@ -56,6 +40,14 @@ void insertEndDouble(struct node** header,char data) {
     newnode->prev = temp;
 }
 
+board setup_board(){
+  struct board_structure*newBoard=(struct board_structure*)malloc(sizeof(struct board_structure*));
+  return newBoard;
+}
+
+void cleanup_board(board u){
+//You may put code here
+}
 void display(struct node * head){
     struct node *tmp;
     if(head==NULL)
@@ -65,31 +57,16 @@ void display(struct node * head){
     else{
       tmp=head;
       while (tmp!=NULL){
-        printf("%c \n",tmp->data);
+        printf("%c",tmp->data);
         tmp=tmp->next;
       }
     }
 }
 
-void free_list(struct node *current){
-  if (current!=NULL) {
-    free_list(current->next);
-    free(current);
-    display(current);
-  }
-}
-
-board setup_board(){
-//You may put code here
-}
-
-void cleanup_board(board u){
-//You may put code here
-}
-
 void read_in_file(FILE *infile){
   char line[100];
-  int j = 1;
+  int j=0;
+  struct board_structure *currBoard=setup_board();
   while ( fgets( line, 100, infile ) != NULL ) 
     { 
       struct node *head = NULL;
@@ -97,18 +74,16 @@ void read_in_file(FILE *infile){
       {
       insertEndDouble(&head,line[i]);
       }
-      display(head);
-      /*
-      struct rowStruct *row = NULL;
-      */
       struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
       newRow->head=head;
-      newRow->rowNum=j;
-
-      //change this
-      newRow->next=NULL;
+      currBoard->rows[j]=newRow;
       j++;
     } 
+  //display the board row by row
+  for (int x=0; x<5; x++){
+    display(currBoard->rows[x]->head);
+    printf("\n");
+  }
 }
 
 void write_out_file(FILE *outfile, board u){
@@ -116,7 +91,16 @@ void write_out_file(FILE *outfile, board u){
 }
 
 char next_player(board u){
-//You may put code here
+  int count_x=0;
+  int count_o=0;
+  char player;
+  if (count_x==count_o){
+    player='x';
+  }
+  else{
+    player='o';
+  }
+  return player;
 }
 
 char current_winner(board u){
@@ -147,5 +131,4 @@ void play_move(struct move m, board u){
 void main(){
   FILE * infile = fopen("test_input1.txt","r");
   read_in_file(infile);
-
 }
