@@ -21,7 +21,19 @@ struct board_structure {
   struct rowStruct *rows[512];
   int size;
 };
+void insertPos(struct node** start, int pos, char data)
+{
+    struct node* new_node = (struct node*)malloc(sizeof(struct node*));
+    new_node->data = data;
+    struct node *temp = *start; 
+    pos--;
+    while (pos>0){
+      temp = temp->next;
+      pos--;
+    }
+    temp->data=data;
 
+}
 void insertEndDouble(struct node** header,char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
     newnode->data=data;
@@ -49,7 +61,7 @@ board setup_board(){
 void cleanup_board(board u){
 //You may put code here
 }
-void display(struct node * head){
+void display(struct node * head,int size){
     struct node *tmp;
     if(head==NULL)
     {
@@ -57,7 +69,7 @@ void display(struct node * head){
     }
     else{
       tmp=head;
-      while (tmp!=NULL){
+      for(int i=0;i<size;i++){
         printf("%c",tmp->data);
         tmp=tmp->next;
       }
@@ -71,18 +83,30 @@ void read_in_file(FILE *infile){
   while ( fgets( line, 100, infile ) != NULL ) 
     { 
       struct node *head = NULL;
-      for (int i=0;i<strlen(line);i++)
+      int i;
+      for (i=0;i<strlen(line);i++)
       {
           insertEndDouble(&head,line[i]);
       }
       struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
       newRow->head=head;
       currBoard->rows[j]=newRow;
+      struct node *tmp=head;
+      for(int j=0;j<i-1;j++){
+        tmp=tmp->next;
+      }
+      head->prev=tmp->prev;
+      tmp->next=head;
+      display(head,i);
       j++;
     } 
   currBoard->size=j;
+  /*
   char winner=current_winner(currBoard);
-  printf("%c\n",winner);
+  printf("Winner: %c\n`",winner);
+  
+  char player=next_player(currBoard);
+  printf("Next player: %c\n`",player);*/
 }
 
 void write_out_file(FILE *outfile, board u){
@@ -106,7 +130,7 @@ char next_player(board u){
         tmp=tmp->next;
     }
   }
-  if (count_x==count_o){
+  if (count_x==count_o || count_o>count_x){
     return 'x';
   }
   else{
@@ -116,29 +140,56 @@ char next_player(board u){
 }
 
 char current_winner(board u){
-  for (int x=0;x<u->size;x++) {
+  //check 4 in row
+  for (int row=0;row<u->size;row++) {
     struct node *tmp;
-    tmp=u->rows[x]->head;
+    tmp=u->rows[row]->head;
     char curr;
-    char next;
-    int count=0;
-    for(int i=0;i<sizeof(u->rows[0])-1;i++){
+    int count=1;
+    for(int i=0;i<sizeof(u->rows[0]);i++){
         curr=tmp->data;
-        next=tmp->next->data;
-        //printf("%c\n",next);
-        if(curr==next&&curr!='.'){
-          count++;
-        }
-        else{
-          count=0;
-        }
-        if (count==4)
-        {
-          return curr;
-        }
-        tmp=tmp->next;
+        //4 in row
+          
+          //change this for wrap around
+          if(i<=sizeof(u->rows[0])-4&&curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
+            if(curr!='.')
+            return curr;
+          }
+          if(row <=u->size - 4){
+            struct node *n1,*n2,*n3;
+            n1=u->rows[row+1]->head;
+            n2=u->rows[row+2]->head;
+            n3=u->rows[row+3]->head;
+            for (int j=0;j<i;j++){
+              n1=n1->next;
+              n2=n2->next;
+              n3=n3->next;
+            }
+            //4 in a col
+            if(curr==n1->data&&curr==n2->data&&curr==n3->data){
+              if(curr!='.')
+              return curr;
+            }
+            //4 diagonal to right
+            if(i<=sizeof(u->rows[0])-4&&curr==n1->next->data&&curr==n2->next->next->data&&curr==n3->next->next->next->data){
+              if(curr!='.')
+              return curr;
+            }
+            //4 diagonal to left
+            if(i>=3&&curr==n1->prev->data&&curr==n2->prev->prev->data&&curr==n3->prev->prev->prev->data){
+              if(curr!='.')
+              return curr;
+            }
+          }
+          
+
+            
+         tmp=tmp->next;
+        } 
+        
+    printf("\n");   
     }
-  }
+    
   return 'n';
 }
 
