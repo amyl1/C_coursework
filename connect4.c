@@ -92,21 +92,22 @@ void read_in_file(FILE *infile){
       newRow->head=head;
       currBoard->rows[j]=newRow;
       struct node *tmp=head;
-      for(int j=0;j<i-1;j++){
+      for(int j=0;j<i-2;j++){
         tmp=tmp->next;
       }
-      head->prev=tmp->prev;
+      head->prev=tmp;
       tmp->next=head;
-      display(head,i);
+      //display(head,i);
       j++;
     } 
   currBoard->size=j;
-  /*
+  
   char winner=current_winner(currBoard);
   printf("Winner: %c\n`",winner);
-  
+  /*
   char player=next_player(currBoard);
-  printf("Next player: %c\n`",player);*/
+  printf("Next player: %c\n`",player);
+  */
 }
 
 void write_out_file(FILE *outfile, board u){
@@ -140,7 +141,6 @@ char next_player(board u){
 }
 
 char current_winner(board u){
-  //check 4 in row
   for (int row=0;row<u->size;row++) {
     struct node *tmp;
     tmp=u->rows[row]->head;
@@ -148,10 +148,7 @@ char current_winner(board u){
     int count=1;
     for(int i=0;i<sizeof(u->rows[0]);i++){
         curr=tmp->data;
-        //4 in row
-          
-          //change this for wrap around
-          if(i<=sizeof(u->rows[0])-4&&curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
+          if(curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
             if(curr!='.')
             return curr;
           }
