@@ -168,12 +168,12 @@ char current_winner(board u){
               return curr;
             }
             //4 diagonal to right
-            if(i<=sizeof(u->rows[0])-4&&curr==n1->next->data&&curr==n2->next->next->data&&curr==n3->next->next->next->data){
+            if(curr==n1->next->data&&curr==n2->next->next->data&&curr==n3->next->next->next->data){
               if(curr!='.')
               return curr;
             }
             //4 diagonal to left
-            if(i>=3&&curr==n1->prev->data&&curr==n2->prev->prev->data&&curr==n3->prev->prev->prev->data){
+            if(curr==n1->prev->data&&curr==n2->prev->prev->data&&curr==n3->prev->prev->prev->data){
               if(curr!='.')
               return curr;
             }
