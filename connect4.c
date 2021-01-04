@@ -35,6 +35,7 @@ void insertPos(struct node** start, int pos, char data)
 
 }
 void insertEndDouble(struct node** header,char data) {
+    //printf("char: %c",data);
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
     newnode->data=data;
     newnode->prev=NULL;
@@ -86,28 +87,31 @@ void read_in_file(FILE *infile){
       int i;
       for (i=0;i<strlen(line);i++)
       {
+          //printf("%c",line[i]);
           insertEndDouble(&head,line[i]);
       }
       struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
       newRow->head=head;
       currBoard->rows[j]=newRow;
       struct node *tmp=head;
-      for(int j=0;j<i-2;j++){
+      for(int j=0;j<i-1;j++){
         tmp=tmp->next;
       }
-      head->prev=tmp;
+      head->prev=tmp->prev;
       tmp->next=head;
-      //display(head,i);
+      display(head,i);
+      printf("\n");
+      //printf("head->prev %c",head->prev->data);
+      //printf("end->next %c",tmp->next->data);
       j++;
+    
     } 
   currBoard->size=j;
-  
   char winner=current_winner(currBoard);
   printf("Winner: %c\n`",winner);
   /*
   char player=next_player(currBoard);
-  printf("Next player: %c\n`",player);
-  */
+  printf("Next player: %c\n`",player);*/
 }
 
 void write_out_file(FILE *outfile, board u){
@@ -120,7 +124,7 @@ char next_player(board u){
   for (int x=0;x<u->size;x++) {
     struct node *tmp;
     tmp=u->rows[x]->head;
-    while (tmp!=NULL){
+    for (int i=0;i<sizeof(u->rows[0]);i++){
         if(tmp->data=='x')
         {
           count_x++;
@@ -141,16 +145,19 @@ char next_player(board u){
 }
 
 char current_winner(board u){
+  char winners[2]="..";
   for (int row=0;row<u->size;row++) {
     struct node *tmp;
     tmp=u->rows[row]->head;
     char curr;
     int count=1;
-    for(int i=0;i<sizeof(u->rows[0]);i++){
+    for(int i=0;i<=sizeof(u->rows[0])+1;i++){
         curr=tmp->data;
           if(curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
-            if(curr!='.')
-            return curr;
+            if(curr=='x')
+              winners[0]='x';
+            else if(curr=='o')
+              winners[1]='o';
           }
           if(row <=u->size - 4){
             struct node *n1,*n2,*n3;
@@ -163,31 +170,46 @@ char current_winner(board u){
               n3=n3->next;
             }
             //4 in a col
-            if(curr==n1->data&&curr==n2->data&&curr==n3->data){
-              if(curr!='.')
-              return curr;
+            if(curr==n1->data&&curr==n2->data&&curr==n3->data){           
+              if(curr=='x')
+                winners[0]='x';
+              else if(curr=='o')
+                winners[1]='o';
             }
             //4 diagonal to right
             if(curr==n1->next->data&&curr==n2->next->next->data&&curr==n3->next->next->next->data){
-              if(curr!='.')
-              return curr;
+              if(curr=='x')
+                winners[0]='x';
+              else if(curr=='o')
+                winners[1]='o';
             }
             //4 diagonal to left
             if(curr==n1->prev->data&&curr==n2->prev->prev->data&&curr==n3->prev->prev->prev->data){
-              if(curr!='.')
-              return curr;
+              if(curr=='x')
+                winners[0]='x';
+              else if(curr=='o')
+                winners[1]='o';
             }
           }
-          
-
-            
          tmp=tmp->next;
-        } 
-        
-    printf("\n");   
+        }  
     }
+  if(winners[0]=='x'&&winners[1]=='o'){
+    return 'd';
+  }
     
-  return 'n';
+  else if(winners[0]=='.'&&winners[1]=='.'){
+    return '.';
+  }
+    
+  else if(winners[0]=='x'&&winners[1]=='.'){
+    return 'x';
+  }
+  else
+  {
+    return'o';
+  }
+  
 }
 
 struct move read_in_move(board u){
