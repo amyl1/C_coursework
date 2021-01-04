@@ -21,6 +21,32 @@ struct board_structure {
   struct rowStruct *rows[512];
   int size;
 };
+void display(struct node * head,int size){
+    struct node *tmp;
+    if(head==NULL)
+    {
+      printf("Empty list");
+    }
+    else{
+      tmp=head;
+      for(int i=0;i<size;i++){
+        printf("%c",tmp->data);
+        tmp=tmp->next;
+      }
+    }
+}
+
+void rotate(board u, int r){
+  if(r>0){
+    //right
+      u->rows[abs(r)-1]->head=u->rows[abs(r)-1]->head->next;
+  }
+  else{
+    //left
+      u->rows[abs(r)-1]->head=u->rows[abs(r)-1]->head->prev;
+  }
+}
+
 void insertPos(struct node** start, int pos, char data)
 {
     struct node* new_node = (struct node*)malloc(sizeof(struct node*));
@@ -62,20 +88,6 @@ board setup_board(){
 void cleanup_board(board u){
 //You may put code here
 }
-void display(struct node * head,int size){
-    struct node *tmp;
-    if(head==NULL)
-    {
-      printf("Empty list");
-    }
-    else{
-      tmp=head;
-      for(int i=0;i<size;i++){
-        printf("%c",tmp->data);
-        tmp=tmp->next;
-      }
-    }
-}
 
 void read_in_file(FILE *infile){
   char line[100];
@@ -87,7 +99,6 @@ void read_in_file(FILE *infile){
       int i;
       for (i=0;i<strlen(line);i++)
       {
-          //printf("%c",line[i]);
           insertEndDouble(&head,line[i]);
       }
       struct rowStruct* newRow=(struct rowStruct*)malloc(sizeof(struct rowStruct*));
@@ -99,17 +110,13 @@ void read_in_file(FILE *infile){
       }
       head->prev=tmp->prev;
       tmp->next=head;
-      display(head,i);
-      printf("\n");
-      //printf("head->prev %c",head->prev->data);
-      //printf("end->next %c",tmp->next->data);
       j++;
-    
     } 
   currBoard->size=j;
+  /*
+ rotate(currBoard,2);
   char winner=current_winner(currBoard);
   printf("Winner: %c\n`",winner);
-  /*
   char player=next_player(currBoard);
   printf("Next player: %c\n`",player);*/
 }
@@ -193,7 +200,7 @@ char current_winner(board u){
           }
          tmp=tmp->next;
         }  
-    }
+  }
   if(winners[0]=='x'&&winners[1]=='o'){
     return 'd';
   }
@@ -211,6 +218,8 @@ char current_winner(board u){
   }
   
 }
+
+
 
 struct move read_in_move(board u){
 //You may put code here
