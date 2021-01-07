@@ -239,6 +239,21 @@ void rotate(board u, int r){
       u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
   }
 }
+int drop_down(struct move m, board u){
+  int i;
+  for (i=0;i<u->size;i++){
+    struct node *head = (struct node *)malloc(sizeof(struct node));
+    head=u->array[i];
+    struct node *tmp = (struct node *)malloc(sizeof(struct node));
+    tmp=head;
+    for(int j=1;j<m.column;j++){
+      tmp=tmp->next;
+    }
+    if (tmp->data!='.')
+      break;
+  }
+  return i;
+}
 
 int main(){
   char winner;
@@ -248,10 +263,18 @@ int main(){
   infile=fopen("test_input1.txt","r");
   read_in_file(infile,my_board);
   fclose(infile);
-  //rotate(my_board,2);
-  //printf("Size: %d\n",my_board->size);
+  rotate(my_board,3);
   player=next_player(my_board);
   winner=current_winner(my_board);
-  printf("Winner: %c",winner);
+  for (int i=0;i<my_board->size;i++){
+    struct node *head;
+    //head=my_board->array[0];
+    //insertPos(&head,1,'a');
+    display(my_board->array[i],my_board->rowSize);
+    printf("\n");
+  }
+  struct move my_move=read_in_move(my_board);
+  int x=drop_down(my_move,my_board);
+  printf("%d",x);
   return 0;
 }
