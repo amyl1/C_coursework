@@ -37,8 +37,6 @@ void insertEnd(struct node** head, char data) {
 
 void insertPos(struct node** start, int pos, char value)
 {
-    struct node* new_node = (struct node*)malloc(sizeof(struct node*)); 
-    new_node->data = value;
     struct node *temp = (struct node *)malloc(sizeof(struct node));
     temp = *start; 
     pos--;
@@ -46,12 +44,7 @@ void insertPos(struct node** start, int pos, char value)
       temp = temp->next;
       pos--;
     }
-    struct node *next = (struct node *)malloc(sizeof(struct node));
-    next = temp->next; 
-    temp->next = new_node; 
-    new_node->prev = temp; 
-    new_node->next = next; 
-    next->prev = new_node; 
+   temp->data=value;
 }
 
 void display(struct node *current,int size){
@@ -84,9 +77,10 @@ int drop_down(struct move m, board u){
   return i;
 }
 
-void rotate(board u, int r){
-  if(r<0){
+void rotate(board u, int r, struct move m){
+  if(m.row<0){
       u->array[abs(r)-1]=u->array[abs(r)-1]->next;
+      printf("hello");
   }
   else{
       u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
@@ -97,12 +91,17 @@ void drop_all(board u){
   
 }
 void play_move(struct move m, board u){
+  int r=u->size+1;
+  int absRow=abs(m.row);
+  for (int i=1;i<absRow;i++){
+    r--;
+  }
   int row = drop_down(m,u);
   int x=0;
-  insertPos(&u->array[row],m.column,'a');
+  insertPos(&u->array[row-1],m.column,'a');
   if(m.row!=0)
-    rotate(u,m.row);
-  drop_all(u);
+    rotate(u,r,m);
+  //drop_all(u);
   }
 
 void read_in_file(FILE *infile, board u){
@@ -291,18 +290,18 @@ int main(){
   struct move my_move=read_in_move(my_board);
   //int x=drop_down(my_move,my_board);
   //int x=is_valid_move(my_move,my_board);
-  /*
+
   for (int i=0;i<=my_board->size;i++){
     struct node *head;
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
-  }*/
+  }
   play_move(my_move,my_board);
-  /*
+  
   for (int i=0;i<=my_board->size;i++){
     struct node *head;
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
-  }*/
+  }
   return 0;
 }
