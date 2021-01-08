@@ -3,6 +3,7 @@
 //You may not include any other headers.
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include"connect4.h"
 
 struct board_structure {
@@ -39,13 +40,15 @@ void insertPos(struct node** start, int pos, char value)
 {
     struct node* new_node = (struct node*)malloc(sizeof(struct node*)); 
     new_node->data = value;
-    struct node *temp = *start; 
+    struct node *temp = (struct node *)malloc(sizeof(struct node));
+    temp = *start; 
     pos--;
     while (pos>0){
       temp = temp->next;
       pos--;
     }
-    struct node *next = temp->next; 
+    struct node *next = (struct node *)malloc(sizeof(struct node));
+    next = temp->next; 
     temp->next = new_node; 
     new_node->prev = temp; 
     new_node->next = next; 
@@ -66,6 +69,42 @@ board setup_board(){
 void cleanup_board(board u){
 //You may put code here
 }
+int drop_down(struct move m, board u){
+  int i;
+  for (i=0;i<u->size;i++){
+    struct node *head = (struct node *)malloc(sizeof(struct node));
+    head=u->array[i];
+    struct node *tmp = (struct node *)malloc(sizeof(struct node));
+    tmp=head;
+    for(int j=1;j<m.column;j++){
+      tmp=tmp->next;
+    }
+    if (tmp->data!='.')
+      break;
+  }
+  return i;
+}
+
+void rotate(board u, int r){
+  if(r<0){
+      u->array[abs(r)-1]=u->array[abs(r)-1]->next;
+  }
+  else{
+      u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
+  }
+}
+
+void drop_all(board u){
+  
+}
+void play_move(struct move m, board u){
+  int row = drop_down(m,u);
+  int x=0;
+  insertPos(&u->array[row],m.column,'a');
+  if(m.row!=0)
+    rotate(u,m.row);
+  drop_all(u);
+  }
 
 void read_in_file(FILE *infile, board u){
   struct node *head = (struct node *)malloc(sizeof(struct node));
@@ -142,9 +181,8 @@ char next_player(board u){
 char current_winner(board u){
   char winners[2]="..";
   for (int row=0;row<u->size+1;row++) {
-    struct node *tmp;
+    struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[row];
-    //printf("%c",tmp->data);
     char curr;
     int count=1;
     for(int i=0;i<u->rowSize-1;i++){
@@ -156,7 +194,7 @@ char current_winner(board u){
           winners[1]='o';
         }
         if(row <u->size - 4){
-          struct node *n1,*n2,*n3;
+          struct node *n1,*n2,*n3 = (struct node *)malloc(sizeof(struct node));
           n1=u->array[row+1];
           n2=u->array[row+2];
           n3=u->array[row+3];
@@ -219,62 +257,53 @@ struct move read_in_move(board u){
 }
 
 int is_valid_move(struct move m, board u){
-//You may put code here
+  //check if col in bound
+  if(m.column>=u->rowSize){
+    return 0;
+  }
+  //check if row in bound
+  if(m.row>u->size+1){
+    return 0;
+  }
+  //check if column is full
+  struct node *head = (struct node *)malloc(sizeof(struct node));
+  head=u->array[0];
+  struct node *tmp = (struct node *)malloc(sizeof(struct node));
+  tmp=head;
+  for(int j=1;j<m.column;j++){
+      tmp=tmp->next;
+    }
+  if (tmp->data!='.')
+    return 0;
+  return 1; 
 }
 
 char is_winning_move(struct move m, board u){
-//You may put code here
-}
-
-void play_move(struct move m, board u){
-//You may put code here
-}
-void rotate(board u, int r){
-  if(r>0){
-    //right
-      u->array[abs(r)-1]=u->array[abs(r)-1]->next;
-  }
-  else{
-    //left
-      u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
-  }
-}
-int drop_down(struct move m, board u){
-  int i;
-  for (i=0;i<u->size;i++){
-    struct node *head = (struct node *)malloc(sizeof(struct node));
-    head=u->array[i];
-    struct node *tmp = (struct node *)malloc(sizeof(struct node));
-    tmp=head;
-    for(int j=1;j<m.column;j++){
-      tmp=tmp->next;
-    }
-    if (tmp->data!='.')
-      break;
-  }
-  return i;
+  return 'x';
 }
 
 int main(){
-  char winner;
-  char player;
-  FILE *infile,*outfile;
+  FILE *infile;
   board my_board=setup_board();
   infile=fopen("test_input1.txt","r");
   read_in_file(infile,my_board);
   fclose(infile);
-  rotate(my_board,3);
-  player=next_player(my_board);
-  winner=current_winner(my_board);
-  for (int i=0;i<my_board->size;i++){
+
+  struct move my_move=read_in_move(my_board);
+  //int x=drop_down(my_move,my_board);
+  //int x=is_valid_move(my_move,my_board);
+  /*
+  for (int i=0;i<=my_board->size;i++){
     struct node *head;
-    //head=my_board->array[0];
-    //insertPos(&head,1,'a');
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
-  }
-  struct move my_move=read_in_move(my_board);
-  int x=drop_down(my_move,my_board);
-  printf("%d",x);
+  }*/
+  play_move(my_move,my_board);
+  /*
+  for (int i=0;i<=my_board->size;i++){
+    struct node *head;
+    display(my_board->array[i],my_board->rowSize);
+    printf("\n");
+  }*/
   return 0;
 }
