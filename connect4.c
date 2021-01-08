@@ -28,7 +28,6 @@ void insertEnd(struct node** head, char data) {
         return;
     }
     struct node* temp = *head;
-
     while(temp->next != NULL) {
         temp=temp->next;
     }
