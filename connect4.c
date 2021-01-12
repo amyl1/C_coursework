@@ -136,7 +136,27 @@ void drop_all(board u){
          swap(&positions[y][x],&positions[y][x-j]);
        }
     }
-  } 
+  }
+  printf("\n");
+  for(int x=0;x<=u->size;x++){
+    struct node *tmp = (struct node *)malloc(sizeof(struct node));
+    tmp=u->array[x];
+    for(int y=0;y<u->rowSize-1;y++){
+      
+      if(positions[y][x]==0)
+      {
+        tmp->data='.';
+      }
+      else if(positions[y][x]==1){
+        tmp->data='o';
+      }
+      else
+      {
+        tmp->data='x';
+      }
+      tmp=tmp->next;
+    }
+  }
 }
 void play_move(struct move m, board u){
   int r=u->size+1;
