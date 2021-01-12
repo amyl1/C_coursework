@@ -10,6 +10,7 @@ struct board_structure {
   struct node *array[512];
   int rowSize;
   int size;
+  char currPlayer;
 };
 
 struct node{
@@ -86,9 +87,56 @@ void rotate(board u, int r, struct move m){
       u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
   }
 }
-
+void swap (int *pa, int *pb){
+  int temp=*pa;
+  *pa=*pb;
+  *pb=temp;
+}
 void drop_all(board u){
-  
+    struct node *tmp = (struct node *)malloc(sizeof(struct node));
+    int positions[u->rowSize-1][u->size+1];
+    for(int i=0; i<=u->size; i++){
+      tmp=u->array[i];
+      int j;
+      for(j=0; j<=u->rowSize-2;j++){
+        
+        if(tmp->data=='o'){
+          positions[j][i]=1;
+        }
+        else if(tmp->data=='x'){
+          positions[j][i]=2;
+        }
+        else{
+          
+          positions[j][i]=0;
+        }
+        tmp=tmp->next;
+      }
+      if(tmp->data=='o'){
+        positions[j+1][i]=1;
+      }
+      else if(tmp->data=='x'){
+          positions[j+1][i]=2;
+        }
+      else{
+          
+          positions[j+1][i]=0;
+        }
+  }
+  for(int y=0;y<u->rowSize;y++){
+    for(int x=u->size;x>=0;x--){
+        if(positions[y][x]!=0){
+          continue;
+        }
+       else{
+         int j=0;
+         while(positions[y][x-j]==0&&x-j>0){
+           j++;
+         }
+         swap(&positions[y][x],&positions[y][x-j]);
+       }
+    }
+  } 
 }
 void play_move(struct move m, board u){
   int r=u->size+1;
@@ -98,10 +146,11 @@ void play_move(struct move m, board u){
   }
   int row = drop_down(m,u);
   int x=0;
-  insertPos(&u->array[row-1],m.column,'a');
+  //current player here
+  insertPos(&u->array[row-1],m.column,u->currPlayer);
   if(m.row!=0)
     rotate(u,r,m);
-  //drop_all(u);
+  drop_all(u);
   }
 
 void read_in_file(FILE *infile, board u){
@@ -167,13 +216,12 @@ char next_player(board u){
     }
   }
   if (count_x==count_o || count_o>count_x){
+    u->currPlayer='x';
     return 'x';
   }
   else{
+    u->currPlayer='o';
     return 'o';
-  }
-  if (count_x==count_o || count_o>count_x){
-    return 'x';
   }
 }
 char current_winner(board u){
@@ -290,7 +338,6 @@ int main(){
   struct move my_move=read_in_move(my_board);
   //int x=drop_down(my_move,my_board);
   //int x=is_valid_move(my_move,my_board);
-
   for (int i=0;i<=my_board->size;i++){
     struct node *head;
     display(my_board->array[i],my_board->rowSize);
@@ -303,5 +350,6 @@ int main(){
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
   }
+  //play_move(my_move,my_board);
   return 0;
 }
