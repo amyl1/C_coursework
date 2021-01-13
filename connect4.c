@@ -212,7 +212,21 @@ void read_in_file(FILE *infile, board u){
   }
 
 void write_out_file(FILE *outfile, board u){
-//You may put code here
+  if(outfile == NULL)
+   {
+      printf("Error!");   
+      exit(1);             
+   }
+  for(int j=0;j<=u->size;j++){
+      struct node *tmp = (struct node *)malloc(sizeof(struct node));
+      tmp=u->array[j];
+      for(int i=0;i<u->rowSize-2;i++){        
+        fprintf(outfile,"%c",tmp->data);
+        tmp=tmp->next;
+      }
+    fprintf(outfile,"%c",tmp->data);
+    fprintf(outfile,"\n");
+  }
 }
 
 char next_player(board u){
@@ -420,24 +434,21 @@ char is_winning_move(struct move m, board u){
 }
 
 int main(){
-  FILE *infile;
+  FILE *infile,*outfile;
   board my_board=setup_board();
   infile=fopen("test_input1.txt","r");
   read_in_file(infile,my_board);
   fclose(infile);
   struct move my_move=read_in_move(my_board);
-  //int x=is_valid_move(my_move,my_board);
-  for (int i=0;i<=my_board->size;i++){
-    struct node *head;
-    display(my_board->array[i],my_board->rowSize);
-    printf("\n");
-  }
   play_move(my_move,my_board);
   current_winner(my_board);
   for (int i=0;i<=my_board->size;i++){
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
   }
+  outfile=fopen("final_board.txt","w");
+  write_out_file(outfile,my_board);
+  fclose(outfile);
   //cleanup_board(my_board);*/
   return 0;
 }
