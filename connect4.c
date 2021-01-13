@@ -164,7 +164,6 @@ void play_move(struct move m, board u){
   }
   int row = drop_down(m,u);
   int x=0;
-  //current player here
   insertPos(&u->array[row-1],m.column,u->currPlayer);
   if(m.row!=0)
     rotate(u,r,m);
@@ -252,10 +251,20 @@ char current_winner(board u){
     for(int i=0;i<u->rowSize-1;i++){
       curr=tmp->data;
       if(curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
-        if(curr=='x')
+        if(curr=='x'){
           winners[0]='x';
-        else if(curr=='o')
+          tmp->data='X';
+          tmp->next->data='X';
+          tmp->next->next->data='X';
+          tmp->next->next->next->data='X';
+        }
+        else if(curr=='o'){
           winners[1]='o';
+          tmp->data='O';
+          tmp->next->data='O';
+          tmp->next->next->data='O';
+          tmp->next->next->next->data='O';
+        }
         }
         if(row <u->size - 4){
           struct node *n1,*n2,*n3 = (struct node *)malloc(sizeof(struct node));
@@ -269,24 +278,56 @@ char current_winner(board u){
           }
           //4 in a col
           if(curr==n1->data&&curr==n2->data&&curr==n3->data){           
-            if(curr=='x')
+            if(curr=='x'){
               winners[0]='x';
-            else if(curr=='o')
+              tmp->data='X';
+              n1->data='X';
+              n2->data='X';
+              n3->data='X';
+            }
+            else if(curr=='o'){
               winners[1]='o';
+              tmp->data='O';
+              n1->data='O';
+              n2->data='O';
+              n3->data='O';
+            }
           }
           //4 diagonal to right
           if(curr==n1->next->data&&curr==n2->next->next->data&&curr==n3->next->next->next->data){
-            if(curr=='x')
+            if(curr=='x'){
               winners[0]='x';
-            else if(curr=='o')
+              tmp->data='X';
+              n1->next->data='X';
+              n2->next->next->data='X';
+              n3->next->next->next->data='X';
+            }
+            else if(curr=='o'){
               winners[1]='o';
+              tmp->data='O';
+              n1->next->data='O';
+              n2->next->next->data='O';
+              n3->next->next->next->data='O';
+            }
           }
           //4 diagonal to left
           if(curr==n1->prev->data&&curr==n2->prev->prev->data&&curr==n3->prev->prev->prev->data){
-            if(curr=='x')
-              winners[0]='x';
-            else if(curr=='o')
+            if(curr=='x'){
+            winners[0]='x';
+            tmp->data='O';
+            n1->prev->data='O';
+            n2->prev->prev->data='O';
+            n3->prev->prev->prev->data='O';  
+            }
+              
+            else if(curr=='o'){
               winners[1]='o';
+              tmp->data='O';
+              n1->prev->data='O';
+              n2->prev->prev->data='O';
+              n3->prev->prev->prev->data='O';
+            }
+              
           }
         }
          tmp=tmp->next;
@@ -374,6 +415,7 @@ char is_winning_move(struct move m, board u){
     }
       play_move(m,v);
       winner=current_winner(v);
+      cleanup_board(v);
     return winner;
 }
 
@@ -391,7 +433,7 @@ int main(){
     printf("\n");
   }
   play_move(my_move,my_board);
-  
+  current_winner(my_board);
   for (int i=0;i<=my_board->size;i++){
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
