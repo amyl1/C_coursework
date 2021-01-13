@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
 #include"connect4.h"
 
 struct board_structure {
@@ -49,14 +50,15 @@ void insertPos(struct node** start, int pos, char value)
 }
 
 void display(struct node *current,int size){
-    for(int i=0;i<size-1;i++){
-        printf("%c",current->data);
-        current=current->next;
-    }
+  for(int i=0;i<size-1;i++){
+    printf("%c",current->data);
+    current=current->next;
+  }
 }
 board setup_board(){
   struct board_structure*newBoard=malloc(sizeof(struct board_structure*));
-  newBoard->array==malloc(512*sizeof(struct node));
+  //fix this
+  struct node* array=malloc(512*sizeof(struct node));
   return newBoard;
 }
 void cleanup_board(board u){
@@ -99,10 +101,10 @@ void drop_all(board u){
       int j;
       for(j=0; j<=u->rowSize-2;j++){
         
-        if(tmp->data=='o'){
+        if(tmp->data=='o'||tmp->data=='O'){
           positions[j][i]=1;
         }
-        else if(tmp->data=='x'){
+        else if(tmp->data=='x'||tmp->data=='X'){
           positions[j][i]=2;
         }
         else{
@@ -111,10 +113,10 @@ void drop_all(board u){
         }
         tmp=tmp->next;
       }
-      if(tmp->data=='o'){
+      if(tmp->data=='o'||tmp->data=='O'){
         positions[j+1][i]=1;
       }
-      else if(tmp->data=='x'){
+      else if(tmp->data=='x'||tmp->data=='X'){
           positions[j+1][i]=2;
         }
       else{
@@ -163,7 +165,6 @@ void play_move(struct move m, board u){
     r--;
   }
   int row = drop_down(m,u);
-  int x=0;
   insertPos(&u->array[row-1],m.column,u->currPlayer);
   if(m.row!=0)
     rotate(u,r,m);
@@ -236,11 +237,11 @@ char next_player(board u){
     struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[x];    
     for (int i=0;i<u->rowSize-1;i++){      
-        if(tmp->data=='x')
+        if(tmp->data=='x'||tmp->data=='X')
         {
           count_x++;
         }
-        else if (tmp->data=='o'){
+        else if (tmp->data=='o'||tmp->data=='O'){
           count_o++;
         }
         tmp=tmp->next;
@@ -261,18 +262,17 @@ char current_winner(board u){
     struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[row];
     char curr;
-    int count=1;
     for(int i=0;i<u->rowSize-1;i++){
       curr=tmp->data;
       if(curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
-        if(curr=='x'){
+        if(curr=='x'||tmp->data=='X'){
           winners[0]='x';
           tmp->data='X';
           tmp->next->data='X';
           tmp->next->next->data='X';
           tmp->next->next->next->data='X';
         }
-        else if(curr=='o'){
+        else if(curr=='o'||tmp->data=='O'){
           winners[1]='o';
           tmp->data='O';
           tmp->next->data='O';
@@ -291,15 +291,17 @@ char current_winner(board u){
             n3=n3->next;
           }
           //4 in a col
-          if(curr==n1->data&&curr==n2->data&&curr==n3->data){           
-            if(curr=='x'){
+          if(tolower(curr)==tolower(n1->data)&&tolower(curr)==tolower(n2->data)&&tolower(curr)==tolower(n3->data)){       
+            if(curr=='x'||tmp->data=='X'){
+              printf("4 x in col");
               winners[0]='x';
               tmp->data='X';
               n1->data='X';
               n2->data='X';
               n3->data='X';
             }
-            else if(curr=='o'){
+            else if(curr=='o'||tmp->data=='O'){
+              printf("4 o in col");
               winners[1]='o';
               tmp->data='O';
               n1->data='O';
@@ -308,15 +310,15 @@ char current_winner(board u){
             }
           }
           //4 diagonal to right
-          if(curr==n1->next->data&&curr==n2->next->next->data&&curr==n3->next->next->next->data){
-            if(curr=='x'){
+          if(tolower(curr)==tolower(n1->next->data)&&tolower(curr)==tolower(n2->next->next->data)&&tolower(curr)==tolower(n3->next->next->next->data)){
+            if(curr=='x'||tmp->data=='X'){
               winners[0]='x';
               tmp->data='X';
               n1->next->data='X';
               n2->next->next->data='X';
               n3->next->next->next->data='X';
             }
-            else if(curr=='o'){
+            else if(curr=='o'||tmp->data=='O'){
               winners[1]='o';
               tmp->data='O';
               n1->next->data='O';
@@ -325,8 +327,8 @@ char current_winner(board u){
             }
           }
           //4 diagonal to left
-          if(curr==n1->prev->data&&curr==n2->prev->prev->data&&curr==n3->prev->prev->prev->data){
-            if(curr=='x'){
+          if(tolower(curr)==tolower(n1->prev->data)&&tolower(curr)==tolower(n2->prev->prev->data)&&tolower(curr)==tolower(n3->prev->prev->prev->data)){
+            if(curr=='x'||tmp->data=='X'){
             winners[0]='x';
             tmp->data='O';
             n1->prev->data='O';
@@ -334,7 +336,7 @@ char current_winner(board u){
             n3->prev->prev->prev->data='O';  
             }
               
-            else if(curr=='o'){
+            else if(curr=='o'||tmp->data=='O'){
               winners[1]='o';
               tmp->data='O';
               n1->prev->data='O';
@@ -350,7 +352,7 @@ char current_winner(board u){
   if(winners[0]=='x'&&winners[1]=='o'){
     return 'd';
   }    
-  else if(winners[0]=='.'&&winners[1]=='.'){
+  else if(winners[0]=='.'&&winners[1]=='o'){
     return '.';
   }    
   else if(winners[0]=='x'&&winners[1]=='.'){
@@ -358,7 +360,7 @@ char current_winner(board u){
   }
   else
   {
-    return'o';
+    return'.';
   }
 }
 
@@ -404,8 +406,7 @@ char is_winning_move(struct move m, board u){
     for (int i=1;i<absRow;i++){
       r--;
     }
-    board v=setup_board();
-    
+    board v=setup_board();    
     v->size=u->size;
     v->rowSize=u->rowSize;
     v->currPlayer=u->currPlayer;
@@ -431,24 +432,4 @@ char is_winning_move(struct move m, board u){
       winner=current_winner(v);
       cleanup_board(v);
     return winner;
-}
-
-int main(){
-  FILE *infile,*outfile;
-  board my_board=setup_board();
-  infile=fopen("test_input1.txt","r");
-  read_in_file(infile,my_board);
-  fclose(infile);
-  struct move my_move=read_in_move(my_board);
-  play_move(my_move,my_board);
-  current_winner(my_board);
-  for (int i=0;i<=my_board->size;i++){
-    display(my_board->array[i],my_board->rowSize);
-    printf("\n");
-  }
-  outfile=fopen("final_board.txt","w");
-  write_out_file(outfile,my_board);
-  fclose(outfile);
-  //cleanup_board(my_board);*/
-  return 0;
 }
