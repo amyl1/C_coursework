@@ -39,22 +39,16 @@ void insertEnd(struct node** head, char data) {
 
 void insertPos(struct node** start, int pos, char value)
 {
-    struct node *temp = (struct node *)malloc(sizeof(struct node));
-    temp = *start; 
+  struct node *temp = (struct node *)malloc(sizeof(struct node));
+  temp = *start; 
+  pos--;
+  while (pos>0){
+    temp = temp->next;
     pos--;
-    while (pos>0){
-      temp = temp->next;
-      pos--;
-    }
-   temp->data=value;
+  }
+  temp->data=value;
 }
 
-void display(struct node *current,int size){
-  for(int i=0;i<size-1;i++){
-    printf("%c",current->data);
-    current=current->next;
-  }
-}
 board setup_board(){
   struct board_structure*newBoard=malloc(sizeof(struct board_structure*));
   //fix this
@@ -66,10 +60,10 @@ void cleanup_board(board u){
 }
 int drop_down(struct move m, board u){
   int i;
+  struct node *head = (struct node *)malloc(sizeof(struct node));
+  struct node *tmp = (struct node *)malloc(sizeof(struct node));
   for (i=0;i<u->size;i++){
-    struct node *head = (struct node *)malloc(sizeof(struct node));
     head=u->array[i];
-    struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=head;
     for(int j=1;j<m.column;j++){
       tmp=tmp->next;
@@ -78,6 +72,8 @@ int drop_down(struct move m, board u){
       break;
   }
   return i;
+  free(head);
+  free(tmp);
 }
 
 void rotate(board u, int r, struct move m){
@@ -100,7 +96,6 @@ void drop_all(board u){
       tmp=u->array[i];
       int j;
       for(j=0; j<=u->rowSize-2;j++){
-        
         if(tmp->data=='o'||tmp->data=='O'){
           positions[j][i]=1;
         }
@@ -123,6 +118,7 @@ void drop_all(board u){
           
           positions[j+1][i]=0;
         }
+    ;
   }
   for(int y=0;y<u->rowSize;y++){
     for(int x=u->size;x>=0;x--){
@@ -139,7 +135,6 @@ void drop_all(board u){
     }
   }
   for(int x=0;x<=u->size;x++){
-    struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[x];
     for(int y=0;y<u->rowSize-1;y++){
       
@@ -210,7 +205,7 @@ void read_in_file(FILE *infile, board u){
   head->prev=tmp;
   tmp->next=head;
   u->size=i;
-  }
+}
 
 void write_out_file(FILE *outfile, board u){
   if(outfile == NULL)
@@ -218,15 +213,18 @@ void write_out_file(FILE *outfile, board u){
       printf("Error!");   
       exit(1);             
    }
+  struct node *tmp = (struct node *)malloc(sizeof(struct node));
   for(int j=0;j<=u->size;j++){
-      struct node *tmp = (struct node *)malloc(sizeof(struct node));
+      
       tmp=u->array[j];
       for(int i=0;i<u->rowSize-2;i++){        
         fprintf(outfile,"%c",tmp->data);
         tmp=tmp->next;
       }
+      
     fprintf(outfile,"%c",tmp->data);
     fprintf(outfile,"\n");
+    
   }
 }
 
@@ -294,7 +292,6 @@ char current_winner(board u){
           //4 in a col
           if(tolower(curr)==tolower(n1->data)&&tolower(curr)==tolower(n2->data)&&tolower(curr)==tolower(n3->data)){       
             if(curr=='x'||tmp->data=='X'){
-              printf("4 x in col");
               winners[0]='x';
               tmp->data='X';
               n1->data='X';
@@ -302,7 +299,6 @@ char current_winner(board u){
               n3->data='X';
             }
             else if(curr=='o'||tmp->data=='O'){
-              printf("4 o in col");
               winners[1]='o';
               tmp->data='O';
               n1->data='O';
@@ -344,11 +340,10 @@ char current_winner(board u){
               n2->prev->prev->data='O';
               n3->prev->prev->prev->data='O';
             }
-              
-          }
+          }           
         }
-         tmp=tmp->next;
-    }  
+        tmp=tmp->next;
+    }      
   }
   if(winners[0]=='x'&&winners[1]=='o'){
     return 'd';
@@ -379,15 +374,12 @@ struct move read_in_move(board u){
 }
 
 int is_valid_move(struct move m, board u){
-  //check if col in bound
   if(m.column>=u->rowSize){
     return 0;
   }
-  //check if row in bound
   if(m.row>u->size+1){
     return 0;
   }
-  //check if column is full
   struct node *head = (struct node *)malloc(sizeof(struct node));
   head=u->array[0];
   struct node *tmp = (struct node *)malloc(sizeof(struct node));
@@ -398,6 +390,8 @@ int is_valid_move(struct move m, board u){
   if (tmp->data!='.')
     return 0;
   return 1; 
+  free(tmp);
+  free(head);
 }
 
 char is_winning_move(struct move m, board u){
@@ -415,7 +409,6 @@ char is_winning_move(struct move m, board u){
       v->array[j]=NULL;
       struct node *tmp = (struct node *)malloc(sizeof(struct node));
       tmp=u->array[j];
-      
       for(int k=0;k<u->rowSize-2;k++){        
         insertEnd(&v->array[j],tmp->data);
         tmp=tmp->next;
@@ -428,6 +421,8 @@ char is_winning_move(struct move m, board u){
       }
       v->array[j]->prev=tmpv;
       tmpv->next=v->array[j];
+      free(tmp);
+      free(tmpv);
     }
       play_move(m,v);
       winner=current_winner(v);
