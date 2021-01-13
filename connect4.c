@@ -258,7 +258,8 @@ char next_player(board u){
 }
 char current_winner(board u){
   char winners[2]="..";
-  for (int row=0;row<u->size+1;row++) {
+  for (int row=0;row<=u->size;row++) {
+    
     struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[row];
     char curr;
@@ -280,7 +281,7 @@ char current_winner(board u){
           tmp->next->next->next->data='O';
         }
         }
-        if(row <u->size - 4){
+        if(row <=u->size - 3){
           struct node *n1,*n2,*n3 = (struct node *)malloc(sizeof(struct node));
           n1=u->array[row+1];
           n2=u->array[row+2];
