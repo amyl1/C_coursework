@@ -60,7 +60,7 @@ board setup_board(){
   return newBoard;
 }
 void cleanup_board(board u){
-//You may put code here
+  free(u);
 }
 int drop_down(struct move m, board u){
   int i;
@@ -81,7 +81,6 @@ int drop_down(struct move m, board u){
 void rotate(board u, int r, struct move m){
   if(m.row<0){
       u->array[abs(r)-1]=u->array[abs(r)-1]->next;
-      printf("hello");
   }
   else{
       u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
@@ -137,7 +136,6 @@ void drop_all(board u){
        }
     }
   }
-  printf("\n");
   for(int x=0;x<=u->size;x++){
     struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[x];
@@ -345,7 +343,41 @@ int is_valid_move(struct move m, board u){
 }
 
 char is_winning_move(struct move m, board u){
-  return 'x';
+    char winner;
+    int absRow=abs(m.row);
+    int r=u->size+1;
+    for (int i=1;i<absRow;i++){
+      r--;
+    }
+    board v=setup_board();
+    
+    v->size=u->size;
+    v->rowSize=u->rowSize;
+    v->currPlayer=u->currPlayer;
+    for(int j=0;j<=u->size;j++){
+      v->array[j]=NULL;
+      struct node *tmp = (struct node *)malloc(sizeof(struct node));
+      tmp=u->array[j];
+      
+      for(int k=0;k<u->rowSize-2;k++){        
+        insertEnd(&v->array[j],tmp->data);
+        tmp=tmp->next;
+      }
+      insertEnd(&v->array[j],tmp->data);
+      struct node *tmpv = (struct node *)malloc(sizeof(struct node));
+      tmpv=v->array[j];
+      for(int x=0;x<v->rowSize-2;x++){
+        tmpv=tmpv->next;
+      }
+      v->array[j]->prev=tmpv;
+      tmpv->next=v->array[j];
+    }
+      play_move(m,v);
+      for(int j=0;j<=u->size;j++){
+        display(v->array[j],v->size);
+      }
+      winner=current_winner(v);
+    return winner;
 }
 
 int main(){
@@ -354,22 +386,24 @@ int main(){
   infile=fopen("test_input1.txt","r");
   read_in_file(infile,my_board);
   fclose(infile);
-
   struct move my_move=read_in_move(my_board);
   //int x=drop_down(my_move,my_board);
   //int x=is_valid_move(my_move,my_board);
+  /*
   for (int i=0;i<=my_board->size;i++){
     struct node *head;
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
-  }
+  }*/
+  char winner=is_winning_move(my_move,my_board);
+  printf("%c",winner);
+  /*
   play_move(my_move,my_board);
   
   for (int i=0;i<=my_board->size;i++){
-    struct node *head;
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
   }
-  //play_move(my_move,my_board);
+  //cleanup_board(my_board);*/
   return 0;
 }
