@@ -373,9 +373,6 @@ char is_winning_move(struct move m, board u){
       tmpv->next=v->array[j];
     }
       play_move(m,v);
-      for(int j=0;j<=u->size;j++){
-        display(v->array[j],v->size);
-      }
       winner=current_winner(v);
     return winner;
 }
@@ -387,17 +384,12 @@ int main(){
   read_in_file(infile,my_board);
   fclose(infile);
   struct move my_move=read_in_move(my_board);
-  //int x=drop_down(my_move,my_board);
   //int x=is_valid_move(my_move,my_board);
-  /*
   for (int i=0;i<=my_board->size;i++){
     struct node *head;
     display(my_board->array[i],my_board->rowSize);
     printf("\n");
-  }*/
-  char winner=is_winning_move(my_move,my_board);
-  printf("%c",winner);
-  /*
+  }
   play_move(my_move,my_board);
   
   for (int i=0;i<=my_board->size;i++){
