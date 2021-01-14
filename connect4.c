@@ -119,7 +119,6 @@ void drop_all(board u){
           
           positions[j+1][i]=0;
         }
-    ;
   }
   for(int y=0;y<u->rowSize;y++){
     for(int x=u->size;x>=0;x--){
@@ -161,7 +160,7 @@ void play_move(struct move m, board u){
     r--;
   }
   int row = drop_down(m,u);
-  insertPos(&u->array[row-1],m.column,u->currPlayer);
+  insertPos(&u->array[row-1],m.column,next_player(u));
   if(m.row!=0)
     rotate(u,r,m);
   drop_all(u);
@@ -274,24 +273,24 @@ char next_player(board u){
     return 'o';
   }
 }
+
 char current_winner(board u){
   char winners[2]="..";
-  for (int row=0;row<=u->size;row++) {
-    
+  for (int row=0;row<=u->size;row++) {    
     struct node *tmp = (struct node *)malloc(sizeof(struct node));
     tmp=u->array[row];
     char curr;
     for(int i=0;i<u->rowSize-1;i++){
       curr=tmp->data;
-      if(curr==tmp->next->data&&curr==tmp->next->next->data && curr==tmp->next->next->next->data){
-        if(curr=='x'||tmp->data=='X'){
+      if(tolower(curr)==tolower(tmp->next->data)&&tolower(curr)==tolower(tmp->next->next->data) && tolower(curr)==tolower(tmp->next->next->next->data)){
+        if(curr=='x'||curr=='X'){
           winners[0]='x';
           tmp->data='X';
           tmp->next->data='X';
           tmp->next->next->data='X';
           tmp->next->next->next->data='X';
         }
-        else if(curr=='o'||tmp->data=='O'){
+        else if(curr=='o'||curr=='O'){
           winners[1]='o';
           tmp->data='O';
           tmp->next->data='O';
@@ -299,7 +298,9 @@ char current_winner(board u){
           tmp->next->next->next->data='O';
         }
         }
+        //fix this
         if(row <=u->size - 3){
+          //printf("check %d,%d,%d,%d",row,row+1,row+2,row+3);
           struct node *n1,*n2,*n3 = (struct node *)malloc(sizeof(struct node));
           n1=u->array[row+1];
           n2=u->array[row+2];
@@ -311,14 +312,14 @@ char current_winner(board u){
           }
           //4 in a col
           if(tolower(curr)==tolower(n1->data)&&tolower(curr)==tolower(n2->data)&&tolower(curr)==tolower(n3->data)){       
-            if(curr=='x'||tmp->data=='X'){
+            if(curr=='x'||curr=='X'){
               winners[0]='x';
               tmp->data='X';
               n1->data='X';
               n2->data='X';
               n3->data='X';
             }
-            else if(curr=='o'||tmp->data=='O'){
+            else if(curr=='o'||curr=='O'){
               winners[1]='o';
               tmp->data='O';
               n1->data='O';
@@ -328,14 +329,14 @@ char current_winner(board u){
           }
           //4 diagonal to right
           if(tolower(curr)==tolower(n1->next->data)&&tolower(curr)==tolower(n2->next->next->data)&&tolower(curr)==tolower(n3->next->next->next->data)){
-            if(curr=='x'||tmp->data=='X'){
+            if(curr=='x'||curr=='X'){
               winners[0]='x';
               tmp->data='X';
               n1->next->data='X';
               n2->next->next->data='X';
               n3->next->next->next->data='X';
             }
-            else if(curr=='o'||tmp->data=='O'){
+            else if(curr=='o'||curr=='O'){
               winners[1]='o';
               tmp->data='O';
               n1->next->data='O';
@@ -345,7 +346,7 @@ char current_winner(board u){
           }
           //4 diagonal to left
           if(tolower(curr)==tolower(n1->prev->data)&&tolower(curr)==tolower(n2->prev->prev->data)&&tolower(curr)==tolower(n3->prev->prev->prev->data)){
-            if(curr=='x'||tmp->data=='X'){
+            if(curr=='x'||curr=='X'){
             winners[0]='x';
             tmp->data='O';
             n1->prev->data='O';
@@ -353,7 +354,7 @@ char current_winner(board u){
             n3->prev->prev->prev->data='O';  
             }
               
-            else if(curr=='o'||tmp->data=='O'){
+            else if(curr=='o'||curr=='O'){
               winners[1]='o';
               tmp->data='O';
               n1->prev->data='O';
@@ -368,10 +369,10 @@ char current_winner(board u){
   if(winners[0]=='x'&&winners[1]=='o'){
     return 'd';
   }    
-  else if(winners[0]=='.'&&winners[1]=='o'){
-    return '.';
+  else if(winners[1]=='o'){
+    return 'o';
   }    
-  else if(winners[0]=='x'&&winners[1]=='.'){
+  else if(winners[0]=='x'){
     return 'x';
   }
   else
