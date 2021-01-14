@@ -19,7 +19,7 @@ struct node{
   struct node *next;
   struct node *prev;
 };
-
+void exit(int status);
 void insertEnd(struct node** head, char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
     newnode->data=data;
@@ -51,6 +51,7 @@ void insertPos(struct node** start, int pos, char value)
 
 board setup_board(){
   struct board_structure*newBoard=malloc(sizeof(struct board_structure*));
+  newBoard->rowSize=0;
   //fix this
   struct node* array=malloc(512*sizeof(struct node));
   return newBoard;
@@ -167,6 +168,11 @@ void play_move(struct move m, board u){
   }
 
 void read_in_file(FILE *infile, board u){
+  if(infile == NULL)
+   {
+      fprintf(stderr, "Couldn't find input file\n");
+      exit(1);            
+   }
   struct node *head = (struct node *)malloc(sizeof(struct node));
   head =NULL;
   int c=0;
@@ -186,12 +192,26 @@ void read_in_file(FILE *infile, board u){
       head->prev=tmp;
       tmp->next=head;
       head =NULL;
+      if(j!=u->rowSize && u->rowSize!=0){
+        fprintf(stderr, "Row sizes not consistent\n");
+        exit(1);
+      }
+      if(j<4 && j>512){
+        fprintf(stderr, "Board size out of bounds\n");
+        exit(1);
+      }
       u->rowSize=j;
       j=0;
     }
     else{
-      insertEnd(&head,c);
-      j++;
+      if(c=='o'||c=='O'||c=='x'||c=='X'||c=='.'||c=='\n'){
+        insertEnd(&head,c);
+        j++;
+      }
+      else{
+        fprintf(stderr, "Invalid character in file\n");
+        exit(1);
+      }
     }
     c=fgetc(infile);
    }
@@ -210,8 +230,8 @@ void read_in_file(FILE *infile, board u){
 void write_out_file(FILE *outfile, board u){
   if(outfile == NULL)
    {
-      printf("Error!");   
-      exit(1);             
+      fprintf(stderr, "Couldn't find output file\n");
+      exit(1);            
    }
   struct node *tmp = (struct node *)malloc(sizeof(struct node));
   for(int j=0;j<=u->size;j++){
