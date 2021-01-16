@@ -1,22 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-#define SIZE 200 
-#define NUM 50 
+int compareFunc(const void *p1, const void *p2) {
+    return strcmp(p1, p2);
+}
 int main(int argc, char* argv[])
 {
- char line[NUM][SIZE];
-	char fname[20];
     char *fileExt=".txt";
     char *f_pres;
     FILE *fptr = stdin; 
     size_t opt;
-    int i = 0;
     int leng = 0;
-    //extracts 'options'
-    for (i=1; i<argc; i++) {
+    char s[255][255];
+    int n = 0;
+    for (int i=1; i<argc; i++) {
         f_pres=strstr(argv[i],fileExt);
         if (f_pres){
            fptr = fopen(argv[i], "r");
@@ -26,6 +24,19 @@ int main(int argc, char* argv[])
             }
         }        
     }
+    
+    while (n < 255 && fscanf(fptr, "%254s", s[n]) == 1) {
+        n++;
+    }
+    fclose(fptr);
+
+    qsort(s, n, sizeof(*s), compareFunc);
+
+    for (int i = 0; i < n; i++) {
+        printf("%s ", s[i]);
+    }
+    printf("\n");
+    
     for (opt = 1; opt < argc && argv[opt][0] == '-'; opt++) {
         switch (argv[opt][1]) { 
         case 'o' : 
@@ -42,17 +53,7 @@ int main(int argc, char* argv[])
             break;
         default: printf("Other.\n"); 
         }
-    }  
-    while(fgets(line[i], SIZE, fptr)) 
-	{
-        line[i][strlen(line[i]) - 1] = '\0';
-        i++;
-    }
-    leng = i; 
-    for(i = 0; i < leng; ++i)
-    {
-        printf(" %s\n", line[i]);
-    }
+    } 
     printf("\n");
     return 0;
 }
