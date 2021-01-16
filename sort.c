@@ -1,52 +1,58 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int main(int argc, char* argv[]){
-    char *str = argv[1];
-    int i=0;
-    int j=0;
-    FILE *fp;
-    if (argc > 2) {
-        fp = fopen(argv[2], "r");
-        if (fp == NULL) {
+#include <stdbool.h>
+
+#define SIZE 200 
+#define NUM 50 
+int main(int argc, char* argv[])
+{
+ char line[NUM][SIZE];
+	char fname[20];
+    char *fileExt=".txt";
+    char *f_pres;
+    FILE *fptr = stdin; 
+    size_t opt;
+    int i = 0;
+    int leng = 0;
+    //extracts 'options'
+    for (i=1; i<argc; i++) {
+        f_pres=strstr(argv[i],fileExt);
+        if (f_pres){
+           fptr = fopen(argv[i], "r");
+           if (fptr == NULL) {
             fprintf(stderr, "cannot open %s\n", argv[2]);
             return 1;
-        }
-        else{
-            printf("file opened");
-        }
-    } else {
-        fp = stdin; /* read from standard input if no argument on the command line */
-        printf("reading from command line");
-    }
-   for(i=0; str[i]!='\0'; ++i)
-    {
-        while (!((str[i]>='a'&&str[i]<='z') || (str[i]>='A'&&str[i]<='Z' || str[i]=='\0')))
-        {
-            for(j=i;str[j]!='\0';++j)
-            {
-                str[j]=str[j+1];
             }
-            str[j]='\0';
+        }        
+    }
+    for (opt = 1; opt < argc && argv[opt][0] == '-'; opt++) {
+        switch (argv[opt][1]) { 
+        case 'o' : 
+            printf("o"); 
+            break; 
+        case 'n' : 
+            printf("n"); 
+            break; 
+        case 'r' : 
+            printf("r"); 
+            break;
+        case 'h' : 
+            printf("h"); 
+            break;
+        default: printf("Other.\n"); 
         }
+    }  
+    while(fgets(line[i], SIZE, fptr)) 
+	{
+        line[i][strlen(line[i]) - 1] = '\0';
+        i++;
     }
-    char option = str[0];
-   switch (option) { 
-    case 'o' : 
-        printf("o"); 
-        break; 
-    case 'n' : 
-        printf("n"); 
-        break; 
-    case 'r' : 
-        printf("r"); 
-        break;
-    case 'h' : 
-        printf("h"); 
-        break;
-    default: printf("Other.\n"); 
+    leng = i; 
+    for(i = 0; i < leng; ++i)
+    {
+        printf(" %s\n", line[i]);
     }
-
+    printf("\n");
     return 0;
 }
