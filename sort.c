@@ -5,6 +5,20 @@
 int compareFunc(const void *p1, const void *p2) {
     return strcmp(p1, p2);
 }
+void displayHelp(){
+    printf("For this part of the coursework, there is the option to read in the content to be sorted from a file or command line \n");
+    printf("Input is read until EOF is reached. \n");
+    printf("-o was implemented to put the output into a file specified in a command line argument. \n");
+    printf("If only one file is specified when using the -o option, the input is read from the command line. \n");
+    printf("if two file arguments are provided when using the -o, the first is the output\n");
+    printf("The second file then provides in the input.\n");
+    printf("-n sorts numerically.\n");
+    printf("-r reverses the sorted string.\n");
+    printf("-h provides this explaination. \n");
+    printf("robustness:\n");
+
+
+}
 int main(int argc, char* argv[])
 {
     char *fileExt=".txt";
@@ -30,7 +44,8 @@ int main(int argc, char* argv[])
             printf("r"); 
             break;
         case 'h' : 
-            printf("h"); 
+            displayHelp();
+            return 1;
             break;
         default: printf("Other.\n"); 
         }
@@ -79,18 +94,15 @@ int main(int argc, char* argv[])
     printf("\n");
     if(rev==false){
         for (int i = 0; i < n; i++) {
-            printf("%s",s[i]);
             fprintf(outptr,"%s\n",s[i]);
         }
     }
     else{
         for(int i=n-1;i>0;i--){
-            printf("%s",s[i]);
             fprintf(outptr,"%s\n",s[i]);
             
         }
     }
     fclose(outptr);
-    
     return 0;
 }
