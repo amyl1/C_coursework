@@ -51,9 +51,17 @@ void insertPos(struct node** start, int pos, char value)
 
 board setup_board(){
   struct board_structure*newBoard=malloc(sizeof(struct board_structure*));
+  if(newBoard==NULL){
+    fprintf(stderr, "Malloc failed\n");
+    exit(1);
+  }
   newBoard->rowSize=0;
   //fix this
   struct node* array=malloc(512*sizeof(struct node));
+  if(array==NULL){
+    fprintf(stderr, "Malloc failed\n");
+    exit(1);
+  }
   return newBoard;
 }
 void cleanup_board(board u){
@@ -227,6 +235,7 @@ void read_in_file(FILE *infile, board u){
 }
 
 void write_out_file(FILE *outfile, board u){
+  current_winner(u);
   if(outfile == NULL)
    {
       fprintf(stderr, "Couldn't find output file\n");
