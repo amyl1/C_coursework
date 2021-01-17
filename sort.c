@@ -2,8 +2,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
+
+
 int compareFunc(const void *p1, const void *p2) {
     return strcmp(p1, p2);
+}
+
+int strcmpbynum(const char s1, const char s2) {
+    if( s1 >= '0' && s1 <= '9'&& s2 >= '0' && s2 <= '9'){
+        if(s1>s2){
+        return 1;
+        }
+        else{
+            return -1;
+        }
+    } 
+    else{
+        return (int)s1 - (int)s2;    
+    }
+}
+static int compareNum(const void *p1, const void *p2) {
+  char ps1 = atoi(p1);
+  char ps2 = atoi(p2);
+  return strcmpbynum(ps1,ps2);
 }
 void displayHelp(){
     printf("For this part of the coursework, there is the option to read in the content to be sorted from a file or command line \n");
@@ -15,8 +37,8 @@ void displayHelp(){
     printf("-n sorts numerically.\n");
     printf("-r reverses the sorted string.\n");
     printf("-h provides this explaination. \n");
-    printf("robustness:\n");
-
+    printf("Robustness is provided by checking that the input and output files exist.\n");
+    printf("There is also other error checking.\n");
 
 }
 int main(int argc, char* argv[])
@@ -26,26 +48,25 @@ int main(int argc, char* argv[])
     FILE *fptr = stdin; 
     FILE *outptr = stdout; 
     size_t opt;
-    int leng = 0;
     char s[255][255];
     int n = 0;
     bool rev=false;
     bool out=false;
+    bool num=false;
     for (opt = 1; opt < argc && argv[opt][0] == '-'; opt++) {
         switch (argv[opt][1]) { 
         case 'o' : 
             out=true;
             break; 
         case 'n' : 
-            printf("n"); 
+            num=true; 
             break; 
         case 'r' : 
             rev=true;
-            printf("r"); 
             break;
         case 'h' : 
             displayHelp();
-            return 1;
+            return 0;
             break;
         default: printf("Other.\n"); 
         }
@@ -89,9 +110,12 @@ int main(int argc, char* argv[])
     while (n < 255 && fscanf(fptr, "%254s", s[n]) == 1) {
         n++;
     }
-    fclose(fptr);
-    qsort(s, n, sizeof(*s), compareFunc);
-    printf("\n");
+    if (num){
+        qsort(s, n, sizeof(*s), compareNum);
+    }
+    else{
+       qsort(s, n, sizeof(*s), compareFunc);
+    }
     if(rev==false){
         for (int i = 0; i < n; i++) {
             fprintf(outptr,"%s\n",s[i]);
