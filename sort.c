@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
             displayHelp();
             return 0;
             break;
-        default: printf("Other.\n"); 
+        default: printf("-%c Option not recognised.\n",argv[opt][1]); 
         }
     }
     for (int i=1; i<argc; i++) {
@@ -89,7 +89,6 @@ int main(int argc, char* argv[])
                     filecount++;
                 }
                 if(filecount==1){
-                    printf("outfile %s",argv[i]);
                     outptr = fopen(argv[i], "w");
                     if (outptr == NULL) {
                         fprintf(stderr, "cannot open %s\n", argv[i]);
@@ -97,7 +96,6 @@ int main(int argc, char* argv[])
                     }
                 }
                 else if (filecount==2){
-                    printf("infile %s",argv[i]);
                     fptr = fopen(argv[i], "r"); 
                     if (fptr == NULL) {
                         fprintf(stderr, "cannot open %s\n", argv[i]);
