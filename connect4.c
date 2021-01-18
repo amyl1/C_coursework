@@ -56,7 +56,6 @@ board setup_board(){
     exit(1);
   }
   newBoard->rowSize=0;
-  //fix this
   struct node* array=malloc(512*sizeof(struct node));
   if(array==NULL){
     fprintf(stderr, "Malloc failed\n");
@@ -69,11 +68,10 @@ void cleanup_board(board u){
 }
 int drop_down(struct move m, board u){
   int i;
-  struct node *head = (struct node *)malloc(sizeof(struct node));
   struct node *tmp = (struct node *)malloc(sizeof(struct node));
   for (i=0;i<u->size;i++){
-    head=u->array[i];
-    tmp=head;
+    tmp=u->array[i];
+    //tmp=head;
     for(int j=1;j<m.column;j++){
       tmp=tmp->next;
     }
@@ -81,7 +79,6 @@ int drop_down(struct move m, board u){
       break;
   }
   return i;
-  free(head);
   free(tmp);
 }
 
