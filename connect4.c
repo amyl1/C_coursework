@@ -64,11 +64,9 @@ board setup_board(){
   return newBoard;
 }
 void cleanup_board(board u){
-  int i;
   for(int i=0; i<u->rowSize;i++){
     free(u->array[i]);
   }
- u->array[i];
 }
 int drop_down(struct move m, board u){
   int i;
