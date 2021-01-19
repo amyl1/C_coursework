@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     char *f_pres;
     FILE *fptr = stdin; 
     FILE *outptr = stdout; 
-    size_t opt;
+    int opt;
     char s[255][255];
     int n = 0;
     bool rev=false;
