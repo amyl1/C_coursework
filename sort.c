@@ -9,9 +9,9 @@ int compareFunc(const void *p1, const void *p2) {
     return strcmp(p1, p2);
 }
 
-int strcmpbynum(const char s1, const char s2) {
-    if( s1 >= '0' && s1 <= '9'&& s2 >= '0' && s2 <= '9'){
-        if(s1>s2){
+int compNum(const char str1, const char str2) {
+    if( str1 >= '0' && str1 <= '9'&& str2 >= '0' && str2 <= '9'){
+        if(str1>str2){
         return 1;
         }
         else{
@@ -19,13 +19,13 @@ int strcmpbynum(const char s1, const char s2) {
         }
     } 
     else{
-        return (int)s1 - (int)s2;    
+        return (int)str1 - (int)str2;    
     }
 }
 static int compareNum(const void *p1, const void *p2) {
-  char ps1 = atoi(p1);
-  char ps2 = atoi(p2);
-  return strcmpbynum(ps1,ps2);
+  char char1 = atoi(p1);
+  char char2 = atoi(p2);
+  return compNum(char1,char2);
 }
 void displayHelp(){
     printf("For this part of the coursework, there is the option to read in the content to be sorted from a file or command line \n");
@@ -47,14 +47,14 @@ int main(int argc, char* argv[])
     char *f_pres;
     FILE *fptr = stdin; 
     FILE *outptr = stdout; 
-    int opt;
+    int option;
     char s[255][255];
     int n = 0;
     bool rev=false;
     bool out=false;
     bool num=false;
-    for (opt = 1; opt < argc && argv[opt][0] == '-'; opt++) {
-        switch (argv[opt][1]) { 
+    for (option = 1; option < argc && argv[option][0] == '-'; option++) {
+        switch (argv[option][1]) { 
         case 'o' : 
             out=true;
             break; 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
             displayHelp();
             return 0;
             break;
-        default: printf("-%c Option not recognised.\n",argv[opt][1]); 
+        default: printf("-%c Option not recognised.\n",argv[option][1]); 
         }
     }
     for (int i=1; i<argc; i++) {
