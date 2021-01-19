@@ -1,6 +1,6 @@
-abc
-hello
-HELLO
-kmn
-qrs
-xyz
+10
+15
+16
+2
+8
+9

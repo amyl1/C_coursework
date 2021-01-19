@@ -64,7 +64,11 @@ board setup_board(){
   return newBoard;
 }
 void cleanup_board(board u){
-  free(u);
+  int i;
+  for(int i=0; i<u->rowSize;i++){
+    free(u->array[i]);
+  }
+ u->array[i];
 }
 int drop_down(struct move m, board u){
   int i;
@@ -304,7 +308,6 @@ char current_winner(board u){
           tmp->next->next->next->data='O';
         }
         }
-        //fix this
         if(row <=u->size - 3){
           //printf("check %d,%d,%d,%d",row,row+1,row+2,row+3);
           struct node *n1,*n2,*n3 = (struct node *)malloc(sizeof(struct node));
@@ -389,22 +392,39 @@ char current_winner(board u){
 
 struct move read_in_move(board u){
   struct move newMove;
-  printf("Player %c enter column to place your token: ",next_player(u)); //Do not edit this line
   int col;
-  scanf("%d",&col);
+  int Count;
+  printf("Player %c enter column to place your token: ",next_player(u)); //Do not edit this line
+  while ((Count = scanf("%d",&col)) != 1) {
+  if (Count < 0) {
+    exit(1);
+  }
+  scanf("%*c");
+  printf("Input not valid. Please enter an integer.\n");
+}
   newMove.column=col;
-  printf("Player %c enter row to rotate: ",next_player(u)); // Do not edit this line
   int row;
-  scanf("%d",&row);
+  printf("Player %c enter row to rotate: ",next_player(u)); // Do not edit this line
+  Count=0;
+  while ((Count = scanf("%d",&row)) != 1) {
+  if (Count < 0) { 
+    exit(1); // No more input possible
+  }
+  scanf("%*c");
+  printf("Input not valid. Please enter an integer.\n");
+}
+  //scanf("%d",&row);
   newMove.row=row;
   return newMove;
 }
 
 int is_valid_move(struct move m, board u){
   if(m.column>=u->rowSize){
+    printf("not in range");
     return 0;
   }
   if(m.row>u->size+1){
+    printf("not in range");
     return 0;
   }
   struct node *head = (struct node *)malloc(sizeof(struct node));
