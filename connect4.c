@@ -7,19 +7,23 @@
 #include<ctype.h>
 #include"connect4.h"
 
+//define board struct
 struct board_structure {
   struct node *array[512];
   int rowSize;
   int size;
   char currPlayer;
 };
-
+//define node struct
 struct node{
   char data;
   struct node *next;
   struct node *prev;
 };
+
 void exit(int status);
+
+//insert new node at end of liked list
 void insertEnd(struct node** head, char data) {
     struct node* newnode=(struct node*)malloc(sizeof(struct node*));
     newnode->data=data;
@@ -37,6 +41,7 @@ void insertEnd(struct node** head, char data) {
     newnode->prev = temp;
 }
 
+//insert a node into a certain position in the existing linked list
 void insertPos(struct node** start, int pos, char value)
 {
   struct node *temp = (struct node *)malloc(sizeof(struct node));
@@ -49,8 +54,10 @@ void insertPos(struct node** start, int pos, char value)
   temp->data=value;
 }
 
+//set up board and allocate memory
 board setup_board(){
   struct board_structure*newBoard=malloc(sizeof(struct board_structure*));
+  //malloc test
   if(newBoard==NULL){
     fprintf(stderr, "Malloc failed\n");
     exit(1);
@@ -63,11 +70,14 @@ board setup_board(){
   }
   return newBoard;
 }
+//cleanup board
 void cleanup_board(board u){
   for(int i=0; i<u->rowSize;i++){
     free(u->array[i]);
   }
 }
+
+//drop a counter down a column
 int drop_down(struct move m, board u){
   int i;
   struct node *tmp = (struct node *)malloc(sizeof(struct node));
@@ -84,6 +94,7 @@ int drop_down(struct move m, board u){
   free(tmp);
 }
 
+//rotate a row
 void rotate(board u, int r, struct move m){
   if(m.row<0){
       u->array[abs(r)-1]=u->array[abs(r)-1]->next;
@@ -92,11 +103,15 @@ void rotate(board u, int r, struct move m){
       u->array[abs(r)-1]=u->array[abs(r)-1]->prev;
   }
 }
+
+//swap two elements in an array
 void swap (int *pa, int *pb){
   int temp=*pa;
   *pa=*pb;
   *pb=temp;
 }
+
+//drop all the counters after a row has been rotated
 void drop_all(board u){
     struct node *tmp = (struct node *)malloc(sizeof(struct node));
     int positions[u->rowSize-1][u->size+1];
@@ -160,6 +175,8 @@ void drop_all(board u){
     }
   }
 }
+
+//play move
 void play_move(struct move m, board u){
   int r=u->size+1;
   int absRow=abs(m.row);
@@ -173,7 +190,9 @@ void play_move(struct move m, board u){
   drop_all(u);
   }
 
+//read in file
 void read_in_file(FILE *infile, board u){
+  //check file is opened correctly
   if(infile == NULL)
    {
       fprintf(stderr, "Couldn't find input file\n");
@@ -198,10 +217,12 @@ void read_in_file(FILE *infile, board u){
       head->prev=tmp;
       tmp->next=head;
       head =NULL;
+      //check consistent row length
       if(j!=u->rowSize && u->rowSize!=0){
         fprintf(stderr, "Row sizes not consistent\n");
         exit(1);
       }
+      //check board size valid
       if(j<4 && j>512){
         fprintf(stderr, "Board size out of bounds\n");
         exit(1);
@@ -210,6 +231,7 @@ void read_in_file(FILE *infile, board u){
       j=0;
     }
     else{
+      //check all valid characters
       if(c=='o'||c=='O'||c=='x'||c=='X'||c=='.'||c=='\n'){
         insertEnd(&head,c);
         j++;
@@ -233,8 +255,11 @@ void read_in_file(FILE *infile, board u){
   u->size=i;
 }
 
+//write out file
 void write_out_file(FILE *outfile, board u){
+  //find where winning combination is
   current_winner(u);
+  //check output file
   if(outfile == NULL)
    {
       fprintf(stderr, "Couldn't find output file\n");
@@ -255,6 +280,7 @@ void write_out_file(FILE *outfile, board u){
   }
 }
 
+//work out next player, count number of os and xs
 char next_player(board u){
   int count_x=0;
   int count_o=0;
@@ -282,6 +308,7 @@ char next_player(board u){
   }
 }
 
+//check for all combinations of 4 in a row
 char current_winner(board u){
   char winners[2]="..";
   for (int row=0;row<=u->size;row++) {    
@@ -290,6 +317,7 @@ char current_winner(board u){
     char curr;
     for(int i=0;i<u->rowSize-1;i++){
       curr=tmp->data;
+      //4 in row
       if(tolower(curr)==tolower(tmp->next->data)&&tolower(curr)==tolower(tmp->next->next->data) && tolower(curr)==tolower(tmp->next->next->next->data)){
         if(curr=='x'||curr=='X'){
           winners[0]='x';
@@ -307,7 +335,6 @@ char current_winner(board u){
         }
         }
         if(row <=u->size - 3){
-          //printf("check %d,%d,%d,%d",row,row+1,row+2,row+3);
           struct node *n1,*n2,*n3 = (struct node *)malloc(sizeof(struct node));
           n1=u->array[row+1];
           n2=u->array[row+2];
@@ -393,30 +420,31 @@ struct move read_in_move(board u){
   int col;
   int Count;
   printf("Player %c enter column to place your token: ",next_player(u)); //Do not edit this line
+  //check input type  
   while ((Count = scanf("%d",&col)) != 1) {
-  if (Count < 0) {
-    exit(1);
+    if (Count < 0) {
+      exit(1);
+    }
+    scanf("%*c");
+    printf("Input not valid. Please enter an integer.\n");
   }
-  scanf("%*c");
-  printf("Input not valid. Please enter an integer.\n");
-}
   newMove.column=col;
   int row;
   printf("Player %c enter row to rotate: ",next_player(u)); // Do not edit this line
   Count=0;
+  //check input type
   while ((Count = scanf("%d",&row)) != 1) {
   if (Count < 0) { 
-    exit(1); // No more input possible
+    exit(1);
   }
-  scanf("%*c");
-  printf("Input not valid. Please enter an integer.\n");
-}
-  //scanf("%d",&row);
+  }
   newMove.row=row;
   return newMove;
 }
 
+//valid move
 int is_valid_move(struct move m, board u){
+  // check not out of bounds
   if(m.column>=u->rowSize){
     printf("not in range");
     return 0;
@@ -429,9 +457,10 @@ int is_valid_move(struct move m, board u){
   head=u->array[0];
   struct node *tmp = (struct node *)malloc(sizeof(struct node));
   tmp=head;
+  //check column not already full
   for(int j=1;j<m.column;j++){
       tmp=tmp->next;
-    }
+  }
   if (tmp->data!='.')
     return 0;
   return 1; 
@@ -439,6 +468,7 @@ int is_valid_move(struct move m, board u){
   free(head);
 }
 
+//create new board, play move and see if winner. Then clean up board
 char is_winning_move(struct move m, board u){
     char winner;
     int absRow=abs(m.row);

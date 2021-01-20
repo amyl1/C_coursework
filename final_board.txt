@@ -1,6 +1,6 @@
 ........
 ........
-.X......
-.Xo....x
-oXo....x
-oXooxo.x
+X......o
+Xox....o
+Xox..o.o
+Xxo.xo.x
